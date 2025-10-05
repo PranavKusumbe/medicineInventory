@@ -3,6 +3,160 @@ import { useState, useEffect } from 'react';
 import { medicineAPI } from '../services/api';
 import { FaEdit, FaTrash, FaPlus, FaSearch, FaFilter } from 'react-icons/fa';
 
+const MedicineCard = ({ medicine, index, handleEdit, handleDelete }) => {
+  const isExpired = medicine.status === 'expired';
+  const isSoonToExpire = !isExpired && new Date(medicine.expiryDate) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.8, y: 50 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.8, rotateX: 90 }}
+      transition={{ 
+        delay: index * 0.05,
+        type: 'spring',
+        stiffness: 100,
+        damping: 15,
+      }}
+      whileHover={{ 
+        y: -12, 
+        scale: 1.03,
+        rotateY: 5,
+        boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
+        transition: { duration: 0.3 }
+      }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className={`glass-card p-6 relative overflow-hidden ${
+        isExpired ? 'border-red-500/50' : isSoonToExpire ? 'border-yellow-500/50' : 'border-green-500/50'
+      } border-2 cursor-pointer`}
+      style={{
+        transformStyle: 'preserve-3d',
+        perspective: '1000px',
+      }}
+    >
+      {/* Animated gradient overlay on hover */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-transparent"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isHovered ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+      />
+
+      {/* Status badge with pulse effect */}
+      <motion.div 
+        className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold ${
+          isExpired ? 'bg-red-500/20 text-red-400' : 
+          isSoonToExpire ? 'bg-yellow-500/20 text-yellow-400' : 
+          'bg-green-500/20 text-green-400'
+        } backdrop-blur-sm`}
+        animate={isExpired || isSoonToExpire ? { scale: [1, 1.05, 1] } : {}}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        {isExpired ? '❌ Expired' : isSoonToExpire ? '⚠️ Soon' : '✓ Active'}
+      </motion.div>
+
+      <div className="mb-4 relative z-10">
+        <motion.h3 
+          className="text-xl font-bold mb-2 gradient-text"
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: index * 0.05 + 0.1 }}
+        >
+          {medicine.name}
+        </motion.h3>
+        <motion.p 
+          className="text-gray-400 text-sm"
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: index * 0.05 + 0.15 }}
+        >
+          {medicine.category}
+        </motion.p>
+      </div>
+
+      <motion.div 
+        className="space-y-2 mb-4 relative z-10"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: index * 0.05 + 0.2 }}
+      >
+        <div className="flex justify-between">
+          <span className="text-gray-400">Quantity:</span>
+          <motion.span 
+            className="font-semibold"
+            whileHover={{ scale: 1.1, color: '#60a5fa' }}
+          >
+            {medicine.quantity}
+          </motion.span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-400">Price:</span>
+          <motion.span 
+            className="font-semibold text-green-400"
+            whileHover={{ scale: 1.1 }}
+          >
+            ${medicine.price}
+          </motion.span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-400">Expiry:</span>
+          <span className={`font-semibold ${
+            isExpired ? 'text-red-400' : isSoonToExpire ? 'text-yellow-400' : 'text-gray-300'
+          }`}>
+            {new Date(medicine.expiryDate).toLocaleDateString()}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-400">Total Value:</span>
+          <motion.span 
+            className="font-semibold text-blue-400"
+            whileHover={{ scale: 1.1 }}
+          >
+            ${(medicine.price * medicine.quantity).toFixed(2)}
+          </motion.span>
+        </div>
+      </motion.div>
+
+      {/* Action buttons with slide-in effect */}
+      <motion.div 
+        className="flex gap-2 relative z-10"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: isHovered ? 0 : 10, opacity: isHovered ? 1 : 0.7 }}
+        transition={{ duration: 0.3 }}
+      >
+        <motion.button
+          whileHover={{ scale: 1.05, x: 5 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => handleEdit(medicine)}
+          className="flex-1 px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+        >
+          <FaEdit /> Edit
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => handleDelete(medicine._id)}
+          className="px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+        >
+          <FaTrash />
+        </motion.button>
+      </motion.div>
+
+      {/* Shine effect on hover */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+        initial={{ x: '-100%' }}
+        animate={{ x: isHovered ? '200%' : '-100%' }}
+        transition={{ duration: 0.6 }}
+        style={{ transform: 'skewX(-20deg)' }}
+      />
+    </motion.div>
+  );
+};
+
 /**
  * Inventory Dashboard Component
  * CRUD operations with animated cards
@@ -98,160 +252,6 @@ const Inventory = () => {
     });
   };
 
-  const MedicineCard = ({ medicine, index }) => {
-    const isExpired = medicine.status === 'expired';
-    const isSoonToExpire = !isExpired && new Date(medicine.expiryDate) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-      <motion.div
-        layout
-        initial={{ opacity: 0, scale: 0.8, y: 50 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.8, rotateX: 90 }}
-        transition={{ 
-          delay: index * 0.05,
-          type: 'spring',
-          stiffness: 100,
-          damping: 15,
-        }}
-        whileHover={{ 
-          y: -12, 
-          scale: 1.03,
-          rotateY: 5,
-          boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
-          transition: { duration: 0.3 }
-        }}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        className={`glass-card p-6 relative overflow-hidden ${
-          isExpired ? 'border-red-500/50' : isSoonToExpire ? 'border-yellow-500/50' : 'border-green-500/50'
-        } border-2 cursor-pointer`}
-        style={{
-          transformStyle: 'preserve-3d',
-          perspective: '1000px',
-        }}
-      >
-        {/* Animated gradient overlay on hover */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-transparent"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-        />
-
-        {/* Status badge with pulse effect */}
-        <motion.div 
-          className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold ${
-            isExpired ? 'bg-red-500/20 text-red-400' : 
-            isSoonToExpire ? 'bg-yellow-500/20 text-yellow-400' : 
-            'bg-green-500/20 text-green-400'
-          } backdrop-blur-sm`}
-          animate={isExpired || isSoonToExpire ? { scale: [1, 1.05, 1] } : {}}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          {isExpired ? '❌ Expired' : isSoonToExpire ? '⚠️ Soon' : '✓ Active'}
-        </motion.div>
-
-        <div className="mb-4 relative z-10">
-          <motion.h3 
-            className="text-xl font-bold mb-2 gradient-text"
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: index * 0.05 + 0.1 }}
-          >
-            {medicine.name}
-          </motion.h3>
-          <motion.p 
-            className="text-gray-400 text-sm"
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: index * 0.05 + 0.15 }}
-          >
-            {medicine.category}
-          </motion.p>
-        </div>
-
-        <motion.div 
-          className="space-y-2 mb-4 relative z-10"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: index * 0.05 + 0.2 }}
-        >
-          <div className="flex justify-between">
-            <span className="text-gray-400">Quantity:</span>
-            <motion.span 
-              className="font-semibold"
-              whileHover={{ scale: 1.1, color: '#60a5fa' }}
-            >
-              {medicine.quantity}
-            </motion.span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">Price:</span>
-            <motion.span 
-              className="font-semibold text-green-400"
-              whileHover={{ scale: 1.1 }}
-            >
-              ${medicine.price}
-            </motion.span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">Expiry:</span>
-            <span className={`font-semibold ${
-              isExpired ? 'text-red-400' : isSoonToExpire ? 'text-yellow-400' : 'text-gray-300'
-            }`}>
-              {new Date(medicine.expiryDate).toLocaleDateString()}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">Total Value:</span>
-            <motion.span 
-              className="font-semibold text-blue-400"
-              whileHover={{ scale: 1.1 }}
-            >
-              ${(medicine.price * medicine.quantity).toFixed(2)}
-            </motion.span>
-          </div>
-        </motion.div>
-
-        {/* Action buttons with slide-in effect */}
-        <motion.div 
-          className="flex gap-2 relative z-10"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: isHovered ? 0 : 10, opacity: isHovered ? 1 : 0.7 }}
-          transition={{ duration: 0.3 }}
-        >
-          <motion.button
-            whileHover={{ scale: 1.05, x: 5 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleEdit(medicine)}
-            className="flex-1 px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-          >
-            <FaEdit /> Edit
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => handleDelete(medicine._id)}
-            className="px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
-          >
-            <FaTrash />
-          </motion.button>
-        </motion.div>
-
-        {/* Shine effect on hover */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
-          initial={{ x: '-100%' }}
-          animate={{ x: isHovered ? '200%' : '-100%' }}
-          transition={{ duration: 0.6 }}
-          style={{ transform: 'skewX(-20deg)' }}
-        />
-      </motion.div>
-    );
-  };
-
   return (
     <section id="inventory" className="py-20 bg-gray-950">
       <div className="container mx-auto px-6">
@@ -327,7 +327,7 @@ const Inventory = () => {
           >
             <AnimatePresence>
               {medicines.map((medicine, index) => (
-                <MedicineCard key={medicine._id} medicine={medicine} index={index} />
+                <MedicineCard key={medicine._id} medicine={medicine} index={index} handleEdit={handleEdit} handleDelete={handleDelete} />
               ))}
             </AnimatePresence>
           </motion.div>

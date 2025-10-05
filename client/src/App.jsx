@@ -45,16 +45,18 @@ function App() {
   }, []);
 
   return (
-    <div className="relative">
+    <div className="relative overflow-x-hidden">
       {/* Custom Cursor */}
       <CustomCursor />
       
       <Navbar />
-      <main>
+      <main className="relative">
         <Hero />
-        <Analytics />
-        <Inventory />
-        <Features />
+        <div className="relative z-[2]">
+          <Analytics />
+          <Inventory />
+          <Features />
+        </div>
       </main>
       <Footer />
     </div>

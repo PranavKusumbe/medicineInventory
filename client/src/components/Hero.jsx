@@ -94,13 +94,29 @@ const Hero = () => {
     <section 
       id="hero" 
       ref={heroRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden animated-bg"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
+      {/* Video Background */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/90 via-gray-900/70 to-gray-900 z-10"></div>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        >
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-medical-technology-animation-4086-large.mp4" type="video/mp4" />
+        </video>
+      </div>
+      
       {/* 3D Background */}
-      <Hero3D />
+      <div className="absolute inset-0 z-20">
+        <Hero3D />
+      </div>
 
       {/* Animated parallax background shapes */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-[15]">
         <div 
           ref={parallaxRef1}
           className="floating-shape absolute top-20 left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"
@@ -116,7 +132,7 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 text-center">
+      <div className="relative z-30 container mx-auto px-6 text-center">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

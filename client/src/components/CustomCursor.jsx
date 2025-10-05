@@ -60,31 +60,22 @@ const CustomCursor = () => {
 
   const variants = {
     default: {
-      x: mousePosition.x - 10,
-      y: mousePosition.y - 10,
       width: 20,
       height: 20,
       backgroundColor: 'rgba(59, 130, 246, 0.5)',
       border: '2px solid rgba(59, 130, 246, 1)',
-      mixBlendMode: 'difference',
     },
     hover: {
-      x: mousePosition.x - 20,
-      y: mousePosition.y - 20,
       width: 40,
       height: 40,
       backgroundColor: 'rgba(139, 92, 246, 0.3)',
       border: '2px solid rgba(139, 92, 246, 1)',
-      mixBlendMode: 'difference',
     },
     text: {
-      x: mousePosition.x - 30,
-      y: mousePosition.y - 30,
       width: 60,
       height: 60,
       backgroundColor: 'transparent',
       border: '1px solid rgba(59, 130, 246, 0.5)',
-      mixBlendMode: 'difference',
     },
   };
 
@@ -99,26 +90,28 @@ const CustomCursor = () => {
         animate={cursorVariant}
         transition={{
           type: 'spring',
-          stiffness: 500,
-          damping: 28,
-          mass: 0.5,
+          stiffness: 150,
+          damping: 15,
+          mass: 0.1,
         }}
         style={{
           mixBlendMode: 'difference',
+          transform: `translate3d(${mousePosition.x - 10}px, ${mousePosition.y - 10}px, 0)`,
+          willChange: 'transform',
         }}
       />
       
       {/* Cursor trail dot */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9998] w-1 h-1 bg-blue-400 rounded-full"
-        animate={{
-          x: mousePosition.x - 2,
-          y: mousePosition.y - 2,
+        style={{
+          transform: `translate3d(${mousePosition.x - 2}px, ${mousePosition.y - 2}px, 0)`,
+          willChange: 'transform',
         }}
         transition={{
           type: 'spring',
-          stiffness: 300,
-          damping: 20,
+          stiffness: 100,
+          damping: 10,
         }}
       />
     </>

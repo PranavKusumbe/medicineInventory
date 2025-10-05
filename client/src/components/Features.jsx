@@ -24,22 +24,12 @@ const Features = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Sticky title animation
-      gsap.to(titleRef.current, {
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 20%',
-          end: 'bottom 50%',
-          scrub: 1,
-          pin: titleRef.current,
-          pinSpacing: false,
-        },
-      });
-
+      // Removed sticky title animation to fix overlapping issues
+      
       // Feature cards stagger animation with advanced timing
       gsap.from('.feature-card', {
         scrollTrigger: {
-          trigger: '.feature-card',
+          trigger: carouselRef.current,
           start: 'top 85%',
           end: 'top 60%',
           scrub: 1,
@@ -106,6 +96,24 @@ const Features = () => {
       description: 'Beautiful interface that works seamlessly on all devices',
       color: 'from-rose-500 to-red-500',
     },
+    {
+      icon: '🔒',
+      title: 'Secure & Reliable',
+      description: 'Bank-level security with encrypted data storage and regular backups',
+      color: 'from-teal-500 to-cyan-500',
+    },
+    {
+      icon: '📦',
+      title: 'Batch Operations',
+      description: 'Manage multiple medicines at once with bulk import and update features',
+      color: 'from-amber-500 to-yellow-500',
+    },
+    {
+      icon: '🎯',
+      title: 'Smart Categorization',
+      description: 'Automatically organize medicines by type, usage, and priority',
+      color: 'from-violet-500 to-purple-500',
+    },
   ];
 
   return (
@@ -113,16 +121,15 @@ const Features = () => {
       id="features" 
       ref={sectionRef} 
       className="py-32 bg-gray-900/50 overflow-hidden relative"
-      style={{ opacity, scale }}
     >
-      <div className="container mx-auto px-6">
-        {/* Sticky title */}
+      <div className="container mx-auto px-6 relative z-[1]">
+        {/* Title - removed sticky to fix overlapping */}
         <motion.div
           ref={titleRef}
           initial={{ y: 50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           viewport={{ once: true }}
-          className="text-center mb-20 sticky top-24 z-10 bg-gray-900/80 backdrop-blur-lg py-8 rounded-2xl"
+          className="text-center mb-20 py-8"
         >
           <h2 className="text-6xl md:text-7xl font-bold gradient-text mb-6">
             Powerful Features
@@ -149,11 +156,7 @@ const Features = () => {
             >
               {/* Animated background gradient */}
               <motion.div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{
-                  background: `linear-gradient(135deg, ${feature.color.split(' ')[1].replace('from-', '#')}, ${feature.color.split(' ')[2].replace('to-', '#')})`,
-                  opacity: 0.1,
-                }}
+                className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 bg-gradient-to-br ${feature.color}`}
               />
 
               {/* Icon with 3D effect */}

@@ -1,7 +1,7 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { MeshDistortMaterial, OrbitControls } from '@react-three/drei';
-import * as THREE from 'three';
+import { MathUtils } from 'three';
 
 /**
  * 3D Medical Symbol Component
@@ -12,7 +12,7 @@ const MedicalSymbol3D = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   // Track mouse movement for parallax effect
-  useState(() => {
+  useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePosition({
         x: (e.clientX / window.innerWidth) * 2 - 1,
@@ -21,7 +21,7 @@ const MedicalSymbol3D = () => {
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  });
+  }, []);
 
   // Animate rotation and respond to mouse
   useFrame((state) => {
@@ -31,12 +31,12 @@ const MedicalSymbol3D = () => {
       meshRef.current.rotation.y += 0.002;
       
       // Subtle mouse parallax
-      meshRef.current.rotation.x = THREE.MathUtils.lerp(
+      meshRef.current.rotation.x = MathUtils.lerp(
         meshRef.current.rotation.x,
         mousePosition.y * 0.1,
         0.05
       );
-      meshRef.current.rotation.y = THREE.MathUtils.lerp(
+      meshRef.current.rotation.y = MathUtils.lerp(
         meshRef.current.rotation.y,
         mousePosition.x * 0.1,
         0.05
