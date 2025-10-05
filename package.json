@@ -1,0 +1,28 @@
+{
+  "name": "medicine-inventory-management",
+  "version": "1.0.0",
+  "description": "Full-stack Medicine Inventory Management System",
+  "scripts": {
+    "install:server": "cd server && npm install",
+    "install:client": "cd client && npm install",
+    "install:all": "npm run install:server && npm run install:client",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build:client": "cd client && npm run build",
+    "seed": "cd server && node seed-db.js"
+  },
+  "keywords": [
+    "medicine",
+    "inventory",
+    "pharmacy",
+    "mongodb",
+    "react",
+    "express"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
